@@ -11,6 +11,30 @@ export default function Home() {
   const videoRef = useRef();
 
   useEffect(() => {
+    async function setupCamera() {
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('No webcam found.');
+      }
+      const video = videoRef.current;
+      const stream = await navigator.mediaDevices.getUserMedia({
+        'audio': false,
+        'video': {
+          facingMode: 'user',
+          width: 640,
+          height: 480
+        },
+      });
+
+      video.srcObject = stream;
+
+      return new Promise((resolve) => {
+        video.onloadedmetadata = () => {
+          resolve(video);
+        };
+      });
+    }
+
     async function runSquatDetector() {
 
       if (tf.getBackend() === 'webgl' || tf.getBackend() === 'webgpu') {
@@ -22,19 +46,13 @@ export default function Home() {
         poseDetection.SupportedModels.MoveNet,
         { modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING }
       );
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      videoRef.current.srcObject = stream;
-
 
       const SQUAT_REPS = 5; // 목표 스쿼트 반복 횟수
       let squatCount = 0; // 현재까지 인식된 스쿼트 반복 횟수
       let squatDetected = false; // 스쿼트 동작이 인식되었는지 여부
 
       async function detectSquat() {
-
-
-        const image = tf.browser.fromPixels(videoRef.current);
-        const pose = await model.estimatePoses(image, { flipHorizontal: false });
+        const pose = await model.estimatePoses(videoRef.current);
 
         if (pose.length > 0) {
           const leftHip = pose[0].keypoints.find((k) => k.name === 'leftHip');
@@ -56,9 +74,11 @@ export default function Home() {
                 squatDetected = true;
               }
             } else {
+              console.log('stand?');
               squatDetected = false;
             }
           } else {
+            console.log('stand?');
             squatDetected = false;
           }
 
@@ -67,21 +87,21 @@ export default function Home() {
             return;
           }
         }
-
         requestAnimationFrame(detectSquat);
       }
 
       videoRef.current.addEventListener('loadedmetadata', () => {
         detectSquat();
       });
-    }
 
+    }
+    setupCamera();
     runSquatDetector();
   }, []);
 
   return (
     <>
-      <video ref={videoRef} autoPlay width={600} height={450} />
+      <video ref={videoRef} autoPlay />
     </>
   );
 }
