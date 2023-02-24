@@ -74,11 +74,9 @@ export default function Home() {
                 squatDetected = true;
               }
             } else {
-              console.log('stand?');
               squatDetected = false;
             }
           } else {
-            console.log('stand?');
             squatDetected = false;
           }
 
