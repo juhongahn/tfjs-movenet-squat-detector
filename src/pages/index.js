@@ -32,7 +32,9 @@ export default function Home() {
 
       async function detectSquat() {
 
-        const pose = await model.estimatePoses(videoRef.current);
+
+        const image = tf.browser.fromPixels(videoRef.current);
+        const pose = await model.estimatePoses(image, { flipHorizontal: false });
 
         if (pose.length > 0) {
           const leftHip = pose[0].keypoints.find((k) => k.name === 'leftHip');
@@ -79,7 +81,7 @@ export default function Home() {
 
   return (
     <>
-      <video ref={videoRef} autoPlay />
+      <video ref={videoRef} autoPlay width={600} height={450} />
     </>
   );
 }
