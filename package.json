@@ -9,7 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@mediapipe/pose": "^0.5.1675469404",
     "@next/font": "13.2.1",
+    "@tensorflow-models/pose-detection": "^2.0.0",
+    "@tensorflow/tfjs-backend-cpu": "^4.2.0",
+    "@tensorflow/tfjs-backend-webgl": "^4.2.0",
+    "@tensorflow/tfjs-converter": "^4.2.0",
+    "@tensorflow/tfjs-core": "^4.2.0",
     "eslint": "8.34.0",
     "eslint-config-next": "13.2.1",
     "next": "13.2.1",
